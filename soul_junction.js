@@ -71,16 +71,44 @@ playButtons.forEach(button => {
     button.addEventListener('click', function (e) {
         e.preventDefault();
 
-        // Visual feedback
-        const originalText = this.textContent;
-        this.textContent = '⏸ Playing...';
-        this.style.background = 'linear-gradient(135deg, #D4AF37 0%, #C17F5C 100%)';
+        // Check if this button has an associated audio element
+        const audioId = this.getAttribute('data-audio');
 
-        // Reset after 2 seconds (simulation)
-        setTimeout(() => {
-            this.textContent = originalText;
-            this.style.background = '';
-        }, 2000);
+        if (audioId) {
+            // Real audio playback
+            const audio = document.getElementById(audioId);
+
+            if (audio) {
+                if (audio.paused) {
+                    // Play audio
+                    audio.play();
+                    this.textContent = '⏸ Pause';
+                    this.style.background = 'linear-gradient(135deg, #D4AF37 0%, #C17F5C 100%)';
+
+                    // Update button when audio ends
+                    audio.addEventListener('ended', () => {
+                        this.textContent = '▶ Play';
+                        this.style.background = '';
+                    });
+                } else {
+                    // Pause audio
+                    audio.pause();
+                    this.textContent = '▶ Play';
+                    this.style.background = '';
+                }
+            }
+        } else {
+            // Visual feedback only (for albums without audio files)
+            const originalText = this.textContent;
+            this.textContent = '⏸ Playing...';
+            this.style.background = 'linear-gradient(135deg, #D4AF37 0%, #C17F5C 100%)';
+
+            // Reset after 2 seconds (simulation)
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.style.background = '';
+            }, 2000);
+        }
     });
 });
 
